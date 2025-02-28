@@ -122,8 +122,8 @@ func processHgt(filename string, hgtDir string, storage *dem.StorageWriter) erro
 	return nil
 }
 
-func makeTiles(hgtDir, demStorageFile string, concurency int) {
-	storage, err := dem.NewWriter(demStorageFile)
+func makeTiles(hgtDir, demStorageFile string, concurency int, overwrite bool) {
+	storage, err := dem.NewWriter(demStorageFile, overwrite)
 	if err != nil {
 		panic(err)
 	}
@@ -174,11 +174,12 @@ func makeTiles(hgtDir, demStorageFile string, concurency int) {
 func main() {
 	hgtDir := flag.String("hgt", "", "Directory with hgt files in .hgt, .bz2 or .gz format")
 	demStorageFile := flag.String("out", "", "Output file name")
+	overwrite := flag.Bool("overwrite", false, "Ovrerwrite existing files")
 	flag.Parse()
 	if *hgtDir == "" || *demStorageFile == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
 	numCPUs := runtime.NumCPU()
-	makeTiles(*hgtDir, *demStorageFile, numCPUs+1)
+	makeTiles(*hgtDir, *demStorageFile, numCPUs+1, *overwrite)
 }

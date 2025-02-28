@@ -15,16 +15,20 @@ type StorageWriter struct {
 	fIdx *os.File
 }
 
-func NewWriter(path string) (*StorageWriter, error) {
+func NewWriter(path string, overwrite bool) (*StorageWriter, error) {
+	var crflag = os.O_EXCL
+	if overwrite {
+		crflag = os.O_TRUNC
+	}
 	var storage StorageWriter
 	idxPath := path + ".idx"
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0666)
+	f, err := os.OpenFile(path, os.O_CREATE|crflag|os.O_WRONLY, 0666)
 	if err != nil {
 		return nil, err
 	}
 	storage.fData = f
 
-	f, err = os.OpenFile(idxPath, os.O_CREATE|os.O_EXCL|os.O_RDWR, 0666)
+	f, err = os.OpenFile(idxPath, os.O_CREATE|crflag|os.O_RDWR, 0666)
 	if err != nil {
 		return nil, err
 	}
