@@ -45,8 +45,10 @@ func readHgtFile(path string) (*HgtRawData, error) {
 		if err != nil {
 			return nil, err
 		}
+	case ".xml":
+		return nil, nil
 	default:
-		return nil, errors.New("unknown hgt file extension")
+		return nil, errors.New("unknown hgt file extension: " + ext)
 	}
 	rawData, err := ioutil.ReadAll(reader)
 	if err != nil {
@@ -105,7 +107,7 @@ func splitDem(index HgtIndex, data *HgtRawData) (tiles TileRawSet) {
 
 func processHgt(filename string, hgtDir string, storage *dem.StorageWriter) error {
 	hgt, err := readHgtFile(path.Join(hgtDir, filename))
-	if err != nil {
+	if err != nil || hgt == nil {
 		return err
 	}
 	index, err := hgtIndexFromName(filename)
