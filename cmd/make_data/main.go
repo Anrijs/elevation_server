@@ -29,6 +29,9 @@ type HgtIndex struct {
 type TileRawSet [dem.HgtSplitParts * dem.HgtSplitParts]dem.TileRaw
 
 func readHgtFile(path string) (*HgtRawData, error) {
+	if strings.HasPrefix(filepath.Base(path), ".") {
+		return nil, nil
+	}
 	ext := strings.ToLower(filepath.Ext(path))
 	f, err := os.Open(path)
 	var reader io.Reader
