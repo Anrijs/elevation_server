@@ -25,6 +25,7 @@ type HgtIndex struct {
 	lat, lon int
 }
 
+// type TileRawSet [dem.HgtSplitParts * dem.HgtSplitParts]dem.TileRaw
 type TileRawSet [dem.HgtSplitParts * dem.HgtSplitParts]dem.TileRaw
 
 func readHgtFile(path string) (*HgtRawData, error) {
@@ -83,7 +84,8 @@ func hgtIndexFromName(name string) (HgtIndex, error) {
 	return HgtIndex{}, errors.New("invalid HGT file name")
 }
 
-func splitDem(index HgtIndex, data *HgtRawData) (tiles TileRawSet) {
+func splitDem(index HgtIndex, data *HgtRawData) *TileRawSet {
+	tiles := new(TileRawSet) // Allocate on heap
 	for tileDx := 0; tileDx < dem.HgtSplitParts; tileDx++ {
 		for tileDy := 0; tileDy < dem.HgtSplitParts; tileDy++ {
 			tileX := index.lon*dem.HgtSplitParts + tileDx
@@ -102,7 +104,7 @@ func splitDem(index HgtIndex, data *HgtRawData) (tiles TileRawSet) {
 			}
 		}
 	}
-	return
+	return tiles // Return the pointer
 }
 
 func processHgt(filename string, hgtDir string, storage *dem.StorageWriter) error {
